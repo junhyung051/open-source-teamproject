@@ -18,6 +18,7 @@ open-source-teamproject/
 │   └── ...
 ├── db.sqlite3            # 기본 SQLite 데이터베이스
 └── manage.py             # 명령어 실행 스크립트
+
 🚀 주요 기능
 스터디 개설 및 목록 확인
 
@@ -37,7 +38,7 @@ bash
 git clone https://github.com/junhyung051/open-source-teamproject.git
 cd open-source-teamproject
 
-# 2. 가상환경 설정 (선택)
+# 2. 가상환경 설정
 python -m venv venv
 source venv/bin/activate  # Windows는 venv\Scripts\activate
 
@@ -57,5 +58,5 @@ HTML/CSS (템플릿)
 SQLite (기본 DB)
 
 📄 라이선스
-MIT License
+학교 프로젝트 실습용으로 제작하였습니다.
 
