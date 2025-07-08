@@ -1,25 +1,29 @@
+version: "3.9"
+
 services:
   db:
-    image: mysql:8
+    image: postgis/postgis:14-3.3
+    container_name: study_db
     environment:
-      MYSQL_DATABASE: study_db
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
-      MYSQL_ROOT_PASSWORD: rootpassword
+      POSTGRES_DB: studydb
+      POSTGRES_USER: studyuser
+      POSTGRES_PASSWORD: studypass
     ports:
-      - "3307:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
+      - "5432:5432"
 
   web:
-    build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    build:
+      context: ./backend
+    container_name: study_backend
     volumes:
-      - .:/app
+      - ./backend:/app
     ports:
       - "8000:8000"
     depends_on:
       - db
-
-volumes:
-  mysql_data:
+    environment:
+      POSTGRES_NAME: studydb
+      POSTGRES_USER: studyuser
+      POSTGRES_PASSWORD: studypass
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
