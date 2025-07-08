@@ -557,10 +557,6 @@ function App() {
                         <span className="separator">-</span>
                         <div className="location-icon"></div>
                       </div>
-                      <div className="rating">
-                        <div className="star-icon"></div>
-                        <span>Average rating</span>
-                      </div>
                       <div className={`status ${study.status}`}>
                         <div className="status-icon"></div>
                         <span>{study.statusText}</span>
