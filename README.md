@@ -32,4 +32,5 @@
 
 ### 📁 프로젝트 구조
 
-<pre> ``` study-dashboard/ ├── public/ │ └── index.html ├── src/ │ ├── App.js │ ├── index.js │ └── index.css ├── package.json └── README.md ``` </pre>
+# Study Dashboard
+
