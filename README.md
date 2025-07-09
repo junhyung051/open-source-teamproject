@@ -34,10 +34,10 @@
 
 study-dashboard/
 ├── public/
-│   └── index.html          # HTML 템플릿
+│ └── index.html # HTML 템플릿
 ├── src/
-│   ├── App.js              # 메인 React 컴포넌트
-│   ├── index.js            # React 진입점
-│   └── index.css           # 전역 스타일
-├── package.json            # 의존성 관리
-└── README.md              # 프로젝트 설명서
+│ ├── App.js # 메인 React 컴포넌트
+│ ├── index.js # React 진입점
+│ └── index.css # 전역 스타일
+├── package.json # 의존성 관리
+└── README.md # 프로젝트 설명서
