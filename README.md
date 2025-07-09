@@ -74,7 +74,7 @@ npm start
 
 
 1. 폴더 구조
-text
+   
 study-matching/
 ├── public/                # 정적 파일 (index.html 등)
 ├── src/                   # 프론트엔드 소스
