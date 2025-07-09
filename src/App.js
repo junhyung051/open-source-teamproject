@@ -1,4 +1,116 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+
+// ---------------------------
+// 지역 데이터 및 선택 컴포넌트
+// ---------------------------
+const regionData = {
+  '서울특별시': [
+    '강남구', '강동구', '관악구', '광진구', '구로구',
+    '노원구', '도봉구', '동대문구', '동작구', '마포구',
+    '서대문구', '서초구', '성동구', '성북구', '송파구',
+    '양천구', '영등포구', '용산구', '은평구', '종로구',
+    '중구', '중랑구'
+  ],
+  '부산광역시': ['해운대구', '수영구', '연제구', '동래구', '남구', '부산진구'],
+  '경기도': ['수원시', '성남시', '고양시', '용인시', '부천시', '안산시'],
+  '인천광역시': ['연수구', '남동구', '미추홀구', '부평구'],
+  '대구광역시': ['수성구', '달서구', '중구', '동구'],
+  '광주광역시': ['북구', '광산구', '동구', '남구', '서구'],
+  '대전광역시': ['서구', '유성구', '중구', '동구', '대덕구'],
+  '울산광역시': ['남구', '동구', '북구', '중구', '울주군'],
+  '세종특별자치시': ['세종시'],
+  '강원특별자치도': ['춘천시', '원주시', '강릉시', '동해시', '속초시'],
+  '충청북도': ['청주시', '충주시', '제천시'],
+  '충청남도': ['천안시', '아산시', '서산시'],
+  '전라북도': ['전주시', '군산시', '익산시'],
+  '전라남도': ['목포시', '여수시', '순천시'],
+  '경상북도': ['포항시', '경주시', '구미시'],
+  '경상남도': ['창원시', '김해시', '양산시'],
+  '제주특별자치도': ['제주시', '서귀포시'],
+  // 필요 시 추가 지역 데이터를 넣어 주세요.
+};
+
+function RegionSelector({ onChange, inline = false }) {
+  const [sido, setSido] = useState('');
+  const [sigungu, setSigungu] = useState('');
+
+  useEffect(() => {
+    // 두 값이 모두 선택되면 상위 컴포넌트에 전달
+    if (sido && sigungu) onChange(`${sido} ${sigungu}`);
+    else onChange('');
+  }, [sido, sigungu, onChange]);
+
+  if (inline) {
+    return (
+      <div style={{display:'flex',gap:'8px'}}>
+        <select
+          required
+          value={sido}
+          onChange={e => {
+            setSido(e.target.value);
+            setSigungu('');
+          }}
+        >
+          <option value="" disabled>시/도</option>
+          {Object.keys(regionData).map(region => (
+            <option key={region}>{region}</option>
+          ))}
+        </select>
+
+        <select
+          required
+          value={sigungu}
+          disabled={!sido}
+          onChange={e => setSigungu(e.target.value)}
+        >
+          <option value="" disabled>시/군/구</option>
+          {sido && regionData[sido].map(gu => <option key={gu}>{gu}</option>)}
+        </select>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <label>
+        시/도
+        <select
+          required
+          value={sido}
+          onChange={e => {
+            setSido(e.target.value);
+            setSigungu(''); // 시/도 변경 시 구/군 초기화
+          }}
+        >
+          <option value="" disabled>
+            선택
+          </option>
+          {Object.keys(regionData).map(region => (
+            <option key={region}>{region}</option>
+          ))}
+        </select>
+      </label>
+
+      <label>
+        시/군/구
+        <select
+          required
+          value={sigungu}
+          disabled={!sido}
+          onChange={e => setSigungu(e.target.value)}
+        >
+          <option value="" disabled>
+            선택
+          </option>
+          {sido &&
+            regionData[sido].map(gu => (
+              <option key={gu}>{gu}</option>
+            ))}
+        </select>
+      </label>
+    </>
+  );
+}
 
 function App() {
   const [activeNav, setActiveNav] = useState('스터디 목록');
@@ -7,14 +119,19 @@ function App() {
   const [favorites, setFavorites] = useState(new Set([0, 2, 3])); // 첫 번째, 세 번째, 네 번째 카드가 좋아요 상태
   const [currentPage, setCurrentPage] = useState('list');
   const [currentUser, setCurrentUser] = useState(null); // 로그인한 사용자 정보
+  const [users, setUsers] = useState([]); // 간단한 회원 정보 저장 (id, name, email, password)
   const [joinedStudies, setJoinedStudies] = useState(new Set()); // 사용자가 참여한 스터디 id 목록
   const [reviews, setReviews] = useState([]); // 후기 배열
   const [reviewTarget, setReviewTarget] = useState(null); // 후기 작성 대상 스터디
+  const [filterRegion, setFilterRegion] = useState(''); // 지역 필터
+  // RegionSelector에서 선택된 지역 값을 저장
+  const [selectedRegion, setSelectedRegion] = useState('');
 
   // 초기 스터디 데이터
   const initialStudies = [
     {
       id: 0,
+      region: '서울특별시 강남구',
       title: '강남역 9번출구 스타벅스',
       time: '6월 5일 09:30',
       participantsCurrent: 3,
@@ -26,6 +143,7 @@ function App() {
     },
     {
       id: 1,
+      region: '서울특별시 마포구',
       title: '홍대입구역 할리스',
       time: '6월 5일 09:45',
       participantsCurrent: 8,
@@ -37,6 +155,7 @@ function App() {
     },
     {
       id: 2,
+      region: '서울특별시 광진구',
       title: '건대 라운지커피숍',
       time: '6월 9일 09:30',
       participantsCurrent: 3,
@@ -48,6 +167,7 @@ function App() {
     },
     {
       id: 3,
+      region: '서울특별시 영등포구',
       title: '영등포역 투썸플레이스',
       time: '6월 8일 09:30',
       participantsCurrent: 3,
@@ -159,6 +279,13 @@ function App() {
     setCurrentPage('signup');
   };
 
+  // 로그아웃
+  const handleLogout = () => {
+    setCurrentUser(null);
+    alert('로그아웃되었습니다.');
+    setCurrentPage('list');
+  };
+
   const handleBackClick = () => {
     setCurrentPage('list');
   };
@@ -180,9 +307,11 @@ function App() {
     setCurrentPage('reviewform');
   };
 
-  const filteredStudies = studies.filter(study =>
-    study.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredStudies = studies.filter(study => {
+    const matchesSearch = study.title.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesRegion = filterRegion ? (study.region && study.region.startsWith(filterRegion)) : true;
+    return matchesSearch && matchesRegion;
+  });
 
   if (currentPage === 'create') {
     return (
@@ -196,11 +325,15 @@ function App() {
           onSubmit={e => {
             e.preventDefault();
             const data = new FormData(e.target);
-            const title = data.get('title');
-            const place = data.get('place');
+            const detail = data.get('detail');
             const date = data.get('date');
             const time = data.get('time');
             const maxPeople = data.get('max');
+
+            if (!selectedRegion) {
+              alert('지역을 선택하세요.');
+              return;
+            }
 
             // 간단한 날짜·시간 문자열 조합 (YYYY-MM-DD HH:MM)
             const timeText = `${date} ${time}`;
@@ -208,7 +341,8 @@ function App() {
             const newId = studies.length ? Math.max(...studies.map(s => s.id)) + 1 : 0;
             const newStudy = {
               id: newId,
-              title: place,
+              region: selectedRegion,
+              title: `${selectedRegion} ${detail}`, // 지역 + 상세 장소
               time: timeText,
               participantsCurrent: 0,
               participantsMax: Number(maxPeople),
@@ -225,13 +359,11 @@ function App() {
           }}
         >
           <label>
-            스터디 제목
-            <input type="text" name="title" placeholder="예) 알고리즘 스터디" required />
+            장소 상세
+            <input type="text" name="detail" placeholder="예) 강남역 9번 출구 스타벅스" required />
           </label>
-          <label>
-            장소
-            <input type="text" name="place" placeholder="예) 강남역 9번 출구 스타벅스" required />
-          </label>
+          {/* 지역(시/도 · 시/군/구) 선택 */}
+          <RegionSelector onChange={setSelectedRegion} />
           <label>
             날짜
             <input type="date" name="date" required />
@@ -265,8 +397,28 @@ function App() {
           className="auth-form"
           onSubmit={e => {
             e.preventDefault();
-            alert('회원가입이 완료되었습니다!');
-            setCurrentPage('list');
+            const data = new FormData(e.target);
+            const name = data.get('name');
+            const email = data.get('email');
+            const password = data.get('password');
+            const passwordConfirm = data.get('passwordConfirm');
+
+            if (password !== passwordConfirm) {
+              alert('비밀번호가 일치하지 않습니다.');
+              return;
+            }
+
+            // 이미 가입된 이메일 체크
+            if (users.some(u => u.email === email)) {
+              alert('이미 가입된 이메일입니다.');
+              return;
+            }
+
+            const newUser = { id: Date.now(), name, email, password };
+            setUsers(prev => [...prev, newUser]);
+
+            alert('회원가입이 완료되었습니다! 로그인해주세요.');
+            setCurrentPage('login');
           }}
         >
           <label>
@@ -304,7 +456,15 @@ function App() {
             e.preventDefault();
             const data = new FormData(e.target);
             const email = data.get('email');
-            setCurrentUser({ id: Date.now(), email });
+            const password = data.get('password');
+
+            const user = users.find(u => u.email === email && u.password === password);
+            if (!user) {
+              alert('이메일 또는 비밀번호가 올바르지 않습니다.');
+              return;
+            }
+
+            setCurrentUser(user);
             alert('로그인 성공!');
             setCurrentPage('list');
           }}
@@ -501,7 +661,7 @@ function App() {
       <main className="main-content">
         {/* 상단 헤더 */}
         <header className="header">
-          <div className="search-bar">
+          <div className="search-bar" style={{gap:'16px'}}>
             <div className="search-icon"></div>
             <input 
               type="text" 
@@ -509,11 +669,20 @@ function App() {
               value={searchTerm}
               onChange={handleSearchChange}
             />
+            {/* 지역 필터 */}
+            <RegionSelector onChange={setFilterRegion} inline />
           </div>
-          <div className="auth-buttons">
-            <button className="login-btn" onClick={handleLoginClick}>Login</button>
-            <button className="signup-btn" onClick={handleSignUpClick}>Sign Up</button>
-          </div>
+          {currentUser ? (
+            <div className="auth-user" style={{display:'flex',alignItems:'center',gap:'12px'}}>
+              <span className="greeting" style={{fontWeight:'bold'}}>{`${currentUser.name} 님, 환영합니다!`}</span>
+              <button className="logout-btn" onClick={handleLogout}>Logout</button>
+            </div>
+          ) : (
+            <div className="auth-buttons">
+              <button className="login-btn" onClick={handleLoginClick}>Login</button>
+              <button className="signup-btn" onClick={handleSignUpClick}>Sign Up</button>
+            </div>
+          )}
         </header>
 
         {/* 콘텐츠 영역 */}

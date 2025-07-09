@@ -805,7 +805,8 @@ body {
 }
 
 .login-btn,
-.signup-btn {
+.signup-btn,
+.logout-btn {
     background: #FFFFFF;
     color: #1F64FF;
     border: 1px solid #1F64FF;
@@ -820,7 +821,8 @@ body {
 }
 
 .login-btn:hover,
-.signup-btn:hover {
+.signup-btn:hover,
+.logout-btn:hover {
     background: #1F64FF;
     color: #FFFFFF;
     transform: translateY(-1px);
